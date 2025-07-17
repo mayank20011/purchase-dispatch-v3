@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.mobile-screen{
+  @apply w-full sm:w-[500px] mx-auto h-screen;
+}
+
+.custom-container{
+  @apply w-[90%] mx-auto py-6;
+}
