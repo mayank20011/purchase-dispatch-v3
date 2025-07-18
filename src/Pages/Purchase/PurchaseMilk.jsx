@@ -3,8 +3,27 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState, useRef } from "react";
 import Modal from "../../components/Modal";
+import Spinner from "../../components/Spinner";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const PurchaseMilk = () => {
+  // for error
+  const tempError = {
+    milkError: false,
+    serialNoError: false,
+    vechileNoError: false,
+    driverNameError: false,
+    adulterationError: false,
+    fatError: false,
+    clrError: false,
+    dateError: false,
+    timeError: false,
+    volumeError: false,
+  };
+  const [error, setError] = useState(tempError);
+
+  // for formData
   const [selectedDate, setSelectedDate] = useState();
   const [milkType, setMilkType] = useState("");
   const [time, setTime] = useState("");
@@ -15,35 +34,102 @@ const PurchaseMilk = () => {
   const [fat, setFat] = useState("");
   const [clr, setClr] = useState("");
   const [volume, setVolume] = useState("");
+
+  // for modal
   const [openModal, setOpenModal] = useState(false);
+
+  // for ref
   const form = useRef(null);
+
+  // for loading
+  const [loading, setLoading] = useState(false);
+
+  function checkIfAnyError(tempError) {
+    for (let key in tempError) {
+      if (tempError[key] == true) {
+        return 1;
+      }
+    }
+    return 0;
+  }
 
   function collectFormData() {
     const formData = new FormData(form.current);
-    const {
-      MilkType,
-      SerialNumber,
-      VechileNumber,
-      DriverName,
-      Date,
-      Time,
-      Adulteration,
-      Volume,
-      Fat,
-      Clr,
-      Snf,
-    } = Object.fromEntries(formData.entries());
-    console.log(MilkType,
-      SerialNumber,
-      VechileNumber,
-      DriverName,
-      Date,
-      Time,
-      Adulteration,
-      Volume,
-      Fat,
-      Clr,
-      Snf)
+    const data = Object.fromEntries(formData.entries());
+    if (data.MilkType == undefined || data.MilkType == "") {
+      tempError.milkError = true;
+    }
+    if (data.SerialNumber == undefined || data.SerialNumber == "") {
+      tempError.serialNoError = true;
+    }
+    if (data.VechileNumber == undefined || data.VechileNumber == "") {
+      tempError.vechileNoError = true;
+    }
+    if (data.DriverName == undefined || data.DriverName == "") {
+      tempError.driverNameError = true;
+    }
+    if (data.Date == undefined || data.Date == "") {
+      tempError.dateError = true;
+    }
+    if (data.Time == undefined || data.Time == "") {
+      tempError.timeError = true;
+    }
+    if (data.Adulteration == undefined || data.Adulteration == "") {
+      tempError.adulterationError = true;
+    }
+    if (data.Adulteration == "Yes") {
+      if (data.Volume == undefined || data.Volume == "") {
+        tempError.volumeError = true;
+      }
+      if (data.Fat == undefined || data.Fat == "") {
+        tempError.fatError = true;
+      }
+      if (data.Clr == undefined || data.Clr == "") {
+        tempError.clrError = true;
+      }
+    }
+    setError(tempError);
+    if (checkIfAnyError(tempError)) {
+      return;
+    } else {
+      setOpenModal(true);
+    }
+  }
+
+  function submitData() {
+    setLoading(true);
+    axios
+      .post("")
+      .then(() => {
+        setLoading(false);
+        setOpenModal(false);
+        toast.success("Data Saved Successfully");
+        // reseting form
+        setSelectedDate();
+        setMilkType("");
+        setTime("");
+        setWeightSlab("");
+        setVechileNo("");
+        setDriverName("");
+        setadulteration("");
+        setFat("");
+        setClr("");
+        setVolume("");
+      })
+      .catch((err) => {
+        setOpenModal(false);
+        setLoading(false);
+        console.log(err);
+        let errorMessage = "Something went wrong";
+        if (err.status == 400 || err.status == 500 || err.status == 403) {
+          errorMessage = err.response.data.message;
+          if (err.status == 403) {
+            localStorage.clear();
+            navigate("/login");
+          }
+        }
+        toast.error(errorMessage);
+      });
   }
 
   return (
@@ -57,11 +143,23 @@ const PurchaseMilk = () => {
         >
           {/* select Milk Type */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="MilkType">Select Milk Type</label>
+            <label
+              htmlFor="MilkType"
+              className={`${
+                error.milkError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Select Milk Type
+            </label>
             <select
               name="MilkType"
               value={milkType}
-              onChange={(e) => setMilkType(e.target.value)}
+              onChange={(e) => {
+                setMilkType(e.target.value);
+                setError((prev) => ({ ...prev, milkError: false }));
+              }}
               required
               className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
             >
@@ -72,11 +170,19 @@ const PurchaseMilk = () => {
               <option value="Buffalo Milk">Buffalo Milk</option>
               <option value="Mixed">Mixed</option>
             </select>
-            {/* <p className="text-sm font-semibold text-red-600">Fill Up This Field First</p> */}
           </div>
           {/* for serial number */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="SerialNumber">Serial Number Of Weight Slab</label>
+            <label
+              htmlFor="SerialNumber"
+              className={`${
+                error.serialNoError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Serial Number Of Weight Slab
+            </label>
             <input
               value={weightSlab}
               type="text"
@@ -84,6 +190,7 @@ const PurchaseMilk = () => {
               required
               onChange={(e) => {
                 setWeightSlab(e.target.value);
+                setError((prev) => ({ ...prev, serialNoError: false }));
               }}
               placeholder="Enter Weight Slab Serial Number"
               className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
@@ -91,7 +198,16 @@ const PurchaseMilk = () => {
           </div>
           {/* vechile number */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="VechileNumber">Vechile Number</label>
+            <label
+              htmlFor="VechileNumber"
+              className={`${
+                error.vechileNoError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Vechile Number
+            </label>
             <input
               value={vechileNo}
               type="text"
@@ -99,6 +215,7 @@ const PurchaseMilk = () => {
               required
               onChange={(e) => {
                 setVechileNo(e.target.value);
+                setError((prev) => ({ ...prev, vechileNoError: false }));
               }}
               placeholder="Enter Vechile Number"
               className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
@@ -106,7 +223,16 @@ const PurchaseMilk = () => {
           </div>
           {/* Driver Name */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="DriverName">Driver Name</label>
+            <label
+              htmlFor="DriverName"
+              className={`${
+                error.driverNameError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Driver Name
+            </label>
             <input
               value={driverName}
               type="text"
@@ -114,6 +240,7 @@ const PurchaseMilk = () => {
               required
               onChange={(e) => {
                 setDriverName(e.target.value);
+                setError((prev) => ({ ...prev, driverNameError: false }));
               }}
               placeholder="Enter Driver Name"
               className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
@@ -121,23 +248,45 @@ const PurchaseMilk = () => {
           </div>
           {/* for Date */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="Date">Date</label>
+            <label
+              htmlFor="Date"
+              className={`${
+                error.dateError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Date
+            </label>
             <DatePicker
               name="Date"
               required
               selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
+              onChange={(date) => {
+                setSelectedDate(date);
+                setError((prev) => ({ ...prev, dateError: false }));
+              }}
               placeholderText="Select Date"
               className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
             />
           </div>
           {/* time */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="Time">Time</label>
+            <label
+              htmlFor="Time"
+              className={`${
+                error.timeError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Time
+            </label>
             <input
               value={time}
               onChange={(e) => {
                 setTime(e.target.value);
+                setError((prev) => ({ ...prev, timeError: false }));
               }}
               type="time"
               required
@@ -147,12 +296,22 @@ const PurchaseMilk = () => {
           </div>
           {/* for adulteration */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="Adulteration">Adulteration</label>
+            <label
+              htmlFor="Adulteration"
+              className={`${
+                error.adulterationError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Adulteration
+            </label>
             <select
               name="Adulteration"
               value={adulteration}
               onChange={(e) => {
                 setadulteration(e.target.value);
+                setError((prev) => ({ ...prev, adulterationError: false }));
               }}
               required
               className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
@@ -168,7 +327,16 @@ const PurchaseMilk = () => {
             <>
               {/* Milk Volume */}
               <div className="flex flex-col gap-2">
-                <label htmlFor="Volume">Milk Volume</label>
+                <label
+                  htmlFor="Volume"
+                  className={`${
+                    error.volumeError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Milk Volume
+                </label>
                 <input
                   value={volume}
                   type="number"
@@ -179,6 +347,7 @@ const PurchaseMilk = () => {
                   }}
                   onChange={(e) => {
                     setVolume(e.target.value);
+                    setError((prev) => ({ ...prev, volumeError: false }));
                   }}
                   placeholder="Enter Volume of Milk Purchasing"
                   className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
@@ -186,7 +355,16 @@ const PurchaseMilk = () => {
               </div>
               {/* Fat percent */}
               <div className="flex flex-col gap-2">
-                <label htmlFor="Fat">Fat</label>
+                <label
+                  htmlFor="Fat"
+                  className={`${
+                    error.fatError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Fat
+                </label>
                 <input
                   value={fat}
                   type="number"
@@ -196,6 +374,7 @@ const PurchaseMilk = () => {
                     e.target.blur();
                   }}
                   onChange={(e) => {
+                    setError((prev) => ({ ...prev, fatError: false }));
                     setFat(e.target.value);
                   }}
                   placeholder="Enter Fat %"
@@ -204,7 +383,16 @@ const PurchaseMilk = () => {
               </div>
               {/* clr */}
               <div className="flex flex-col gap-2">
-                <label htmlFor="Clr">Clr</label>
+                <label
+                  htmlFor="Clr"
+                  className={`${
+                    error.clrError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Clr
+                </label>
                 <input
                   value={clr}
                   type="number"
@@ -212,6 +400,7 @@ const PurchaseMilk = () => {
                   required
                   onChange={(e) => {
                     setClr(e.target.value);
+                    setError((prev) => ({ ...prev, clrError: false }));
                   }}
                   onWheel={(e) => {
                     e.target.blur();
@@ -229,7 +418,13 @@ const PurchaseMilk = () => {
                   readOnly
                   className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-not-allowed"
                   value={
-                    fat == 0 || clr == 0 ? "" : clr / 4 + fat * 0.2 + 0.66
+                    fat && clr
+                      ? (
+                          parseFloat(clr) / 4 +
+                          parseFloat(fat) * 0.2 +
+                          0.66
+                        ).toFixed(2)
+                      : ""
                   }
                   required
                 />
@@ -245,11 +440,122 @@ const PurchaseMilk = () => {
           </button>
         </form>
       </div>
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        loading={loading}
+      >
         <div
           className="h-[500px] overflow-y-auto flex flex-col gap-4"
           style={{ scrollbarWidth: "thin", scrollbarColor: "white white" }}
-        ></div>
+        >
+          <i className="fa-solid fa-cart-shopping text-center text-[60px] text-green-600"></i>
+          <p className="text-center text-red-600 font-semibold text-lg">
+            Are you sure you want to submit this information?
+          </p>
+          {/* for content */}
+          <div
+            className="flex flex-col gap-2 grow overflow-auto"
+            style={{ scrollbarWidth: "thin", scrollbarColor: "white black" }}
+          >
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Type Of Milk:</h1>
+              <h1 className="font-semibold">{milkType}</h1>
+            </div>
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Vechile Number:</h1>
+              <h1 className="font-semibold ">{vechileNo}</h1>
+            </div>
+
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Driver Name:</h1>
+              <h1 className="font-semibold ">{driverName}</h1>
+            </div>
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Date:</h1>
+              <h1 className="font-semibold ">
+                {selectedDate
+                  ? selectedDate.toLocaleDateString("en-GB")
+                  : "Not selected"}
+              </h1>
+            </div>
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Time:</h1>
+              <h1 className="font-semibold ">{time}</h1>
+            </div>
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Labtest Passed:</h1>
+              <h1 className="font-semibold">{adulteration}</h1>
+            </div>
+            {adulteration == "Yes" ? (
+              <>
+                <div className="flex items-center gap-4 font-bold">
+                  <h1 className="text-blue-400">Milk Volume:</h1>
+                  <h1 className="font-semibold ">{volume}</h1>
+                </div>
+                <div className="flex items-center gap-4 font-bold">
+                  <h1 className="text-blue-400">FAT %:</h1>
+                  <h1 className="font-semibold ">{fat}</h1>
+                </div>
+                <div className="flex items-center gap-4 font-bold">
+                  <h1 className="text-blue-400">CLR:</h1>
+                  <h1 className="font-semibold ">{clr}</h1>
+                </div>
+                <div className="flex items-center gap-4 font-bold">
+                  <h1 className="text-blue-400">SNF:</h1>
+                  <h1 className="font-semibold ">
+                    {fat && clr
+                      ? (
+                          parseFloat(clr) / 4 +
+                          parseFloat(fat) * 0.2 +
+                          0.66
+                        ).toFixed(2)
+                      : "Not calculated"}
+                  </h1>
+                </div>
+              </>
+            ) : null}
+          </div>
+          {/* for button */}
+          <div className="flex gap-6">
+            <button
+              className={`justify-center w-1/2 flex items-center  px-6 py-2 rounded-md text-white gap-4 font-semibold  ${
+                loading
+                  ? "cursor-not-allowed bg-slate-300/30 text-white"
+                  : "cursor-pointer bg-red-600"
+              }`}
+              onClick={
+                loading
+                  ? () => {}
+                  : () => {
+                      setOpenModal(false);
+                    }
+              }
+              disabled={loading}
+            >
+              <i className="fa-solid fa-trash text-white"></i>
+              <span>Cancel</span>
+            </button>
+            <button
+              className={`justify-center w-1/2 flex items-center  px-6 py-2 rounded-md text-white gap-4 font-semibold  ${
+                loading
+                  ? "bg-slate-300/30 cursor-not-allowed"
+                  : "cursor-pointer bg-green-600"
+              }`}
+              onClick={submitData}
+              disabled={loading}
+            >
+              {loading ? (
+                <Spinner color={"white"} padding={"10"} />
+              ) : (
+                <>
+                  <i className="fa-solid fa-check text-white"></i>
+                  <span>Submit</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </Modal>
     </>
   );

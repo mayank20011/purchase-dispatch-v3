@@ -1,22 +1,22 @@
-const Modal = ({ open, onClose, children }) => {
+const Modal = ({ open, onClose, children, loading }) => {
   return (
     // backdrop
     <div
-      onClick={onClose}
+      onClick={loading? ()=>{} :onClose}
       className={`fixed inset-0 flex justify-center items-center transition-colors ${
         open ? "visible bg-white/20" : "invisible"
       }`}
     >
       {/* modal */}
       <div
-        className={`bg-white rounded-xl shadow p-6 transition-all w-[90%] sm:w-[500px] ${
+        className={`bg-black text-gray-400 rounded-xl shadow p-6 transition-all w-[90%] sm:w-[500px] ${
           open ? "scale-100 opacity-100" : "sccale-125 opacity-0"
         }`}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
-        <i className="absolute top-2 right-2 p-1 rounded-lg text-gray-400 bg-white hover:bg-gray-50 hover:text-gray-600 cursor-pointer text-2xl fa-solid fa-xmark" onClick={onClose}>
+        <i className="absolute top-2 right-2 p-1 rounded-lg text-gray-400 cursor-pointer text-2xl fa-solid fa-xmark" onClick={loading? ()=>{}:onClose}>
         </i>
         {children}
       </div>
