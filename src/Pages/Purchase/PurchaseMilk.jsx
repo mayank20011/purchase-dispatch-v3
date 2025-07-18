@@ -6,10 +6,12 @@ import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Search from "../../components/Search";
 
 const PurchaseMilk = () => {
   // for error
   const tempError = {
+    purchasingFromError: false,
     milkError: false,
     serialNoError: false,
     vechileNoError: false,
@@ -24,6 +26,7 @@ const PurchaseMilk = () => {
   const [error, setError] = useState(tempError);
 
   // for formData
+  const [purchasingFrom, setPurchasingFrom] = useState("");
   const [selectedDate, setSelectedDate] = useState();
   const [milkType, setMilkType] = useState("");
   const [time, setTime] = useState("");
@@ -56,6 +59,9 @@ const PurchaseMilk = () => {
   function collectFormData() {
     const formData = new FormData(form.current);
     const data = Object.fromEntries(formData.entries());
+    if (data.purchasingFrom == undefined || data.purchasingFrom == "") {
+      tempError.purchasingFromError = true;
+    }
     if (data.MilkType == undefined || data.MilkType == "") {
       tempError.milkError = true;
     }
@@ -141,6 +147,27 @@ const PurchaseMilk = () => {
           style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
           ref={form}
         >
+          {/* for selecting persons from whom we are purchasing */}
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="Purchasing From"
+              className={`${
+                error.purchasingFromError
+                  ? "text-red-600 font-semibold animate-bounce"
+                  : ""
+              }`}
+            >
+              Purchasing From
+            </label>
+            <Search
+              name={"purchasingFrom"}
+              url={"http://localhost:3000/names"}
+              setPurchasingFrom={setPurchasingFrom}
+              disableError={() => {
+                setError((prev) => ({ ...prev, purchasingFromError: false }));
+              }}
+            />
+          </div>
           {/* select Milk Type */}
           <div className="flex flex-col gap-2">
             <label
@@ -459,6 +486,10 @@ const PurchaseMilk = () => {
             style={{ scrollbarWidth: "thin", scrollbarColor: "white black" }}
           >
             <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Purchasing From:</h1>
+              <h1 className="font-semibold">{purchasingFrom}</h1>
+            </div>
+            <div className="flex items-center gap-4 font-bold">
               <h1 className="text-blue-400">Type Of Milk:</h1>
               <h1 className="font-semibold">{milkType}</h1>
             </div>
@@ -519,6 +550,7 @@ const PurchaseMilk = () => {
           {/* for button */}
           <div className="flex gap-6">
             <button
+              type="button"
               className={`justify-center w-1/2 flex items-center  px-6 py-2 rounded-md text-white gap-4 font-semibold  ${
                 loading
                   ? "cursor-not-allowed bg-slate-300/30 text-white"
@@ -537,6 +569,7 @@ const PurchaseMilk = () => {
               <span>Cancel</span>
             </button>
             <button
+              type="button"
               className={`justify-center w-1/2 flex items-center  px-6 py-2 rounded-md text-white gap-4 font-semibold  ${
                 loading
                   ? "bg-slate-300/30 cursor-not-allowed"
