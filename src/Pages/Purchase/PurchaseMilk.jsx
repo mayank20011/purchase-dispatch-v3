@@ -7,8 +7,11 @@ import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Search from "../../components/Search";
+import { useNavigate } from "react-router-dom";
 
 const PurchaseMilk = () => {
+  const navigate = useNavigate();
+
   // for error
   const tempError = {
     purchasingFromError: false,
@@ -103,24 +106,22 @@ const PurchaseMilk = () => {
   }
 
   function submitData() {
+    const formdata = new FormData(form.current);
+    const data = Object.fromEntries(formdata.entries());
+    console.log(data);
     setLoading(true);
     axios
-      .post("")
+      .post("", data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
       .then(() => {
         setLoading(false);
         setOpenModal(false);
         toast.success("Data Saved Successfully");
         // reseting form
-        setSelectedDate();
-        setMilkType("");
-        setTime("");
-        setWeightSlab("");
-        setVechileNo("");
-        setDriverName("");
-        setadulteration("");
-        setFat("");
-        setClr("");
-        setVolume("");
+        navigate(0);
       })
       .catch((err) => {
         setOpenModal(false);
@@ -131,7 +132,6 @@ const PurchaseMilk = () => {
           errorMessage = err.response.data.message;
           if (err.status == 403) {
             localStorage.clear();
-            navigate("/login");
           }
         }
         toast.error(errorMessage);
