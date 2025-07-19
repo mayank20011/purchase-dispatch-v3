@@ -1,15 +1,17 @@
 import Navbar from "../../components/Navbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Search from "../../components/Search";
 import { useNavigate } from "react-router-dom";
+import LoadingPage from "../../components/LoadingPage";
 
 const PurchaseSmp = () => {
+  
   const navigate = useNavigate();
 
   const tempError = {
@@ -20,7 +22,13 @@ const PurchaseSmp = () => {
     timeError: false,
   };
 
+  // for error
   const [error, setError] = useState(tempError);
+
+  // for purchase list loading Error and loading
+  const [fetchNameError, setFetchNameError] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [fetchedName, setFetchedName] = useState([]);
 
   // form data states
   const [purchasingFrom, setPurchasingFrom] = useState("");
@@ -51,7 +59,7 @@ const PurchaseSmp = () => {
   function collectFormData() {
     const formData = new FormData(form.current);
     const data = Object.fromEntries(formData.entries());
-    if (data.purchasingFrom == undefined || data.purchasingFrom == "") {
+    if (data.PurchasingFrom == undefined || data.PurchasingFrom == "") {
       tempError.purchasingFromError = true;
     }
     if (data.Date == undefined || data.Date == "") {
@@ -107,6 +115,23 @@ const PurchaseSmp = () => {
       });
   }
 
+  useEffect(() => {
+    if (fetchedName == null || fetchedName.length == 0) {
+      setFetchLoading(true);
+      axios
+        .get(`http://localhost:3000/names`)
+        .then((res) => {
+          const data = res.data.map((obj) => obj.name);
+          setFetchedName(data);
+          setFetchLoading(false);
+        })
+        .catch((err) => {
+          setFetchNameError(true);
+          setFetchLoading(false);
+        });
+    }
+  }, []);
+
   return (
     <>
       <div className="mobile-screen sm:rounded-2xl flex flex-col bg-black text-white">
@@ -115,141 +140,156 @@ const PurchaseSmp = () => {
           className="custom-container flex flex-col gap-6 grow overflow-y-auto"
           style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
         >
-          <form
-            className="custom-container flex flex-col gap-6 grow overflow-y-auto text-[#a8a8a8]"
-            style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
-            ref={form}
-          >
-            {/* for selecting persons from whom we are purchasing */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="Purchasing From"
-                className={`${
-                  error.purchasingFromError
-                    ? "text-red-600 font-semibold animate-bounce"
-                    : ""
-                }`}
-              >
-                Purchasing From
-              </label>
-              <Search
-                name={"purchasingFrom"}
-                url={"http://localhost:3000/names"}
-                setPurchasingFrom={setPurchasingFrom}
-                disableError={() => {
-                  setError((prev) => ({ ...prev, purchasingFromError: false }));
-                }}
+          {fetchLoading ? (
+            <LoadingPage numberOfInputBox={4} remark={true}/>
+          ) : fetchNameError ? (
+            <div className="flex grow items-center justify-center">
+              <img
+                src="/errorImage.png"
+                alt="Error Image"
+                className="aspect-quuare w-full"
               />
             </div>
-            {/* for Date */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="Date"
-                className={`${
-                  error.dateError
-                    ? "text-red-600 font-semibold animate-bounce"
-                    : ""
-                }`}
-              >
-                Date
-              </label>
-              <DatePicker
-                name="Date"
-                required
-                selected={selectedDate}
-                onChange={(date) => {
-                  setSelectedDate(date);
-                  setError((prev) => ({ ...prev, dateError: false }));
-                }}
-                placeholderText="Select Date"
-                className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
-              />
-            </div>
-            {/* time */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="Time"
-                className={`${
-                  error.timeError
-                    ? "text-red-600 font-semibold animate-bounce"
-                    : ""
-                }`}
-              >
-                Time
-              </label>
-              <input
-                value={time}
-                onChange={(e) => {
-                  setTime(e.target.value);
-                  setError((prev) => ({ ...prev, timeError: false }));
-                }}
-                type="time"
-                required
-                name="Time"
-                className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
-              />
-            </div>
-            {/* Number of bags */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="NumberOfBags"
-                className={`${
-                  error.noOfBagsError
-                    ? "text-red-600 font-semibold animate-bounce"
-                    : ""
-                }`}
-              >
-                Number of Bags
-              </label>
-              <input
-                value={noOfBags}
-                type="number"
-                name="NumberOfBags"
-                required
-                onWheel={(e) => {
-                  e.target.blur();
-                }}
-                onChange={(e) => {
-                  setNoOfBags(e.target.value);
-                  setError((prev) => ({ ...prev, noOfBagsError: false }));
-                }}
-                placeholder="Enter Number of Bags"
-                className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
-              />
-            </div>
-            {/* Remark */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="Remark"
-                className={`${
-                  error.remarkError
-                    ? "text-red-600 font-semibold animate-bounce"
-                    : ""
-                }`}
-              >
-                Remark
-              </label>
-              <textarea
-                value={remark}
-                type="text"
-                name="Remark"
-                required
-                onChange={(e) => {
-                  setRemark(e.target.value);
-                  setError((prev) => ({ ...prev, remarkError: false }));
-                }}
-                placeholder="Add Remark"
-                className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer h-[250px] resize-none"
-              />
-            </div>
-            <button
-              type="button"
-              className="bg-[#3441af] cursor-pointer py-3 rounded-md"
-              onClick={() => collectFormData()}
+          ) : (
+            <form
+              className="custom-container flex flex-col gap-6 grow overflow-y-auto text-[#a8a8a8]"
+              style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
+              ref={form}
             >
-              Submit
-            </button>
-          </form>
+              {/* for selecting persons from whom we are purchasing */}
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="Purchasing From"
+                  className={`${
+                    error.purchasingFromError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Purchasing From
+                </label>
+                <Search
+                  name={"PurchasingFrom"}
+                  fetchedData={fetchedName}
+                  setPurchasingFrom={setPurchasingFrom}
+                  disableError={() => {
+                    setError((prev) => ({
+                      ...prev,
+                      purchasingFromError: false,
+                    }));
+                  }}
+                />
+              </div>
+              {/* for Date */}
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="Date"
+                  className={`${
+                    error.dateError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Date
+                </label>
+                <DatePicker
+                  name="Date"
+                  required
+                  selected={selectedDate}
+                  onChange={(date) => {
+                    setSelectedDate(date);
+                    setError((prev) => ({ ...prev, dateError: false }));
+                  }}
+                  placeholderText="Select Date"
+                  className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
+                />
+              </div>
+              {/* time */}
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="Time"
+                  className={`${
+                    error.timeError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Time
+                </label>
+                <input
+                  value={time}
+                  onChange={(e) => {
+                    setTime(e.target.value);
+                    setError((prev) => ({ ...prev, timeError: false }));
+                  }}
+                  type="time"
+                  required
+                  name="Time"
+                  className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
+                />
+              </div>
+              {/* Number of bags */}
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="NumberOfBags"
+                  className={`${
+                    error.noOfBagsError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Number of Bags
+                </label>
+                <input
+                  value={noOfBags}
+                  type="number"
+                  name="NumberOfBags"
+                  required
+                  onWheel={(e) => {
+                    e.target.blur();
+                  }}
+                  onChange={(e) => {
+                    setNoOfBags(e.target.value);
+                    setError((prev) => ({ ...prev, noOfBagsError: false }));
+                  }}
+                  placeholder="Enter Number of Bags"
+                  className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
+                />
+              </div>
+              {/* Remark */}
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="Remark"
+                  className={`${
+                    error.remarkError
+                      ? "text-red-600 font-semibold animate-bounce"
+                      : ""
+                  }`}
+                >
+                  Remark
+                </label>
+                <textarea
+                  value={remark}
+                  type="text"
+                  name="Remark"
+                  required
+                  onChange={(e) => {
+                    setRemark(e.target.value);
+                    setError((prev) => ({ ...prev, remarkError: false }));
+                  }}
+                  placeholder="Add Remark"
+                  className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer h-[250px] resize-none"
+                />
+              </div>
+              <button
+                type="button"
+                className="bg-[#3441af] cursor-pointer py-3 rounded-md"
+                onClick={() => collectFormData()}
+              >
+                Submit
+              </button>
+            </form>
+          )}
         </div>
       </div>
       <Modal
