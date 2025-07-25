@@ -7,10 +7,9 @@ import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Search from "../../components/Search";
-import { useNavigate } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
+
 const PurchaseMilk = () => {
-  const navigate = useNavigate();
 
   // for error
   const tempError = {
@@ -35,7 +34,7 @@ const PurchaseMilk = () => {
 
   // for formData
   const [purchasingFrom, setPurchasingFrom] = useState("");
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState("");
   const [milkType, setMilkType] = useState("");
   const [time, setTime] = useState("");
   const [weightSlab, setWeightSlab] = useState("");
@@ -113,20 +112,33 @@ const PurchaseMilk = () => {
   function submitData() {
     const formdata = new FormData(form.current);
     const data = Object.fromEntries(formdata.entries());
-    console.log(data);
     setLoading(true);
     axios
-      .post("", data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .post(
+        "http://localhost:5000/api/v1/purchase/milk/push-data-to-sheet",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then(() => {
         setLoading(false);
         setOpenModal(false);
         toast.success("Data Saved Successfully");
         // reseting form
-        navigate(0);
+        setPurchasingFrom("");
+        setSelectedDate("");
+        setMilkType("");
+        setTime("");
+        setWeightSlab("");
+        setVechileNo("");
+        setDriverName("");
+        setadulteration("");
+        setFat("");
+        setClr("");
+        setVolume("");
       })
       .catch((err) => {
         setOpenModal(false);
@@ -147,13 +159,16 @@ const PurchaseMilk = () => {
     if (fetchedName == null || fetchedName.length == 0) {
       setFetchLoading(true);
       axios
-        .get(`https://purchase-dispatch-excel.vercel.app/api/v1/purchase/milk`,{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+        .get(
+          `https://purchase-dispatch-excel.vercel.app/api/v1/purchase/milk`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         .then((res) => {
-          const names = res.data.data.map((obj)=>(obj.name))
+          const names = res.data.data.map((obj) => obj.name);
           setFetchedName(names);
           setFetchLoading(false);
         })
@@ -169,7 +184,7 @@ const PurchaseMilk = () => {
       <div className="mobile-screen sm:rounded-2xl flex flex-col bg-black text-white">
         <Navbar name={"Purchase / Milk"} />
         {fetchLoading ? (
-          <LoadingPage numberOfInputBox={6} remark={false}/>
+          <LoadingPage numberOfInputBox={6} remark={false} />
         ) : fetchNameError ? (
           <div className="flex grow items-center justify-center">
             <img
