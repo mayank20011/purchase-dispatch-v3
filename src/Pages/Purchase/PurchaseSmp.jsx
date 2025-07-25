@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 
 const PurchaseSmp = () => {
-  
   const navigate = useNavigate();
 
   const tempError = {
@@ -119,13 +118,21 @@ const PurchaseSmp = () => {
     if (fetchedName == null || fetchedName.length == 0) {
       setFetchLoading(true);
       axios
-        .get(`http://localhost:3000/names`)
+        .get(
+          `https://purchase-dispatch-excel.vercel.app/api/v1/purchase/smp`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         .then((res) => {
-          const data = res.data.map((obj) => obj.name);
-          setFetchedName(data);
+          const names = res.data.data.map((obj) => obj.name);
+          setFetchedName(names);
           setFetchLoading(false);
         })
         .catch((err) => {
+          console.log(err)
           setFetchNameError(true);
           setFetchLoading(false);
         });
@@ -141,7 +148,7 @@ const PurchaseSmp = () => {
           style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
         >
           {fetchLoading ? (
-            <LoadingPage numberOfInputBox={4} remark={true}/>
+            <LoadingPage numberOfInputBox={4} remark={true} />
           ) : fetchNameError ? (
             <div className="flex grow items-center justify-center">
               <img

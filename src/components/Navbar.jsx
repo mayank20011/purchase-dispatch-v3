@@ -20,8 +20,8 @@ const Navbar = ({ name }) => {
   }
 
   return (
-    <div className="bg-[#121212]">
-      <div className="relative w-full custom-container overflow-hidden !py-4">
+    <div className="bg-[#121212] relative overflow-x-clip">
+      <div className="w-full custom-container overflow-hidden !py-4">
         <div className="flex items-center justify-between">
           <i
             className="fa-solid fa-arrow-left text-2xl cursor-pointer"
@@ -39,7 +39,7 @@ const Navbar = ({ name }) => {
         </div>
 
         <nav
-          className="fixed top-0 left-0 h-screen bg-[#121212]/90 w-[300px] p-6 flex flex-col gap-6 text-left transition -translate-x-full overflow-y-auto z-[100]"
+          className="absolute top-0 left-0 h-screen bg-[#121212]/90 w-[300px] p-6 flex flex-col gap-6 text-left transition -translate-x-full overflow-y-auto z-[100]"
           id="nav"
         >
           <i
