@@ -305,7 +305,7 @@ const PurchaseDahiMatka = () => {
               <h1 className="font-semibold ">{time}</h1>
             </div>
             <div className="flex items-center gap-4 font-bold">
-              <h1 className="text-blue-400">Quantity:</h1>
+              <h1 className="text-blue-400">Number of Dahi Matka:</h1>
               <h1 className="font-semibold ">{quantity}</h1>
             </div>
           </div>

@@ -6,6 +6,7 @@ const Search = ({ fetchedData, setPurchasingFrom, disableError, name }) => {
   const [selectedName, setSelectedName] = useState("");
 
   function handleInputChange(e) {
+    setOpenList(true);
     setSelectedName(e.target.value);
     if (e.target.value == "") {
       setOpenList(false);
@@ -28,6 +29,7 @@ const Search = ({ fetchedData, setPurchasingFrom, disableError, name }) => {
         className="w-full p-3 rounded-md  outline-none cursor-pointer"
         onChange={handleInputChange}
         value={selectedName}
+        autoComplete="off"
       />
       {openList ? (
         <div
