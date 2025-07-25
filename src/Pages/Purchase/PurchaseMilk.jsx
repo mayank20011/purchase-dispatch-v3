@@ -115,7 +115,7 @@ const PurchaseMilk = () => {
     setLoading(true);
     axios
       .post(
-        "http://localhost:5000/api/v1/purchase/milk/push-data-to-sheet",
+        "https://purchase-dispatch-excel.vercel.app/api/v1/purchase/milk/push-data-to-sheet",
         data,
         {
           headers: {
