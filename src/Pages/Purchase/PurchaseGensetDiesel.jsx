@@ -7,11 +7,9 @@ import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Search from "../../components/Search";
-import { useNavigate } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 
 const PurchaseGensetDiesel = () => {
-  const navigate = useNavigate();
 
   const tempError = {
     purchasingFromError: false,
@@ -31,8 +29,8 @@ const PurchaseGensetDiesel = () => {
   // form data states
   const [purchasingFrom, setPurchasingFrom] = useState("");
   const [quantity, setquantity] = useState("");
-  const [selectedDate, setSelectedDate] = useState();
-  const [time, setTime] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [time, setTime] = useState("");
 
   // loading
   const [loading, setLoading] = useState(false);
@@ -56,7 +54,6 @@ const PurchaseGensetDiesel = () => {
   function collectFormData() {
     const formData = new FormData(form.current);
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
     if (data.PurchasingFrom == undefined || data.PurchasingFrom == "") {
       tempError.purchasingFromError = true;
     }
@@ -80,10 +77,9 @@ const PurchaseGensetDiesel = () => {
   function submitData() {
     const formdata = new FormData(form.current);
     const data = Object.fromEntries(formdata.entries());
-    console.log(data);
     setLoading(true);
     axios
-      .post("", data, {
+      .post("https://purchase-dispatch-excel.vercel.app/api/v1/purchase/diesel-genset/push-data-to-sheet", data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -93,7 +89,10 @@ const PurchaseGensetDiesel = () => {
         setOpenModal(false);
         toast.success("Data Saved Successfully");
         // reseting form
-        navigate(0);
+        setPurchasingFrom("");
+        setSelectedDate("");
+        setTime("");
+        setquantity("");
       })
       .catch((err) => {
         setOpenModal(false);

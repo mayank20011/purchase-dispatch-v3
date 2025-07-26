@@ -49,8 +49,8 @@ const PurchasePolyFilm = () => {
 
   // form data states
   const [purchasingFrom, setPurchasingFrom] = useState("");
-  const [selectedDate, setSelectedDate] = useState();
-  const [time, setTime] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [time, setTime] = useState("");
   const [productsInput, setProductsInput] = useState([]);
   // loading
   const [loading, setLoading] = useState(false);

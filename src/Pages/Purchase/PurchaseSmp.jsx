@@ -7,12 +7,9 @@ import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Search from "../../components/Search";
-import { useNavigate } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 
 const PurchaseSmp = () => {
-  const navigate = useNavigate();
-
   const tempError = {
     purchasingFromError: false,
     noOfBagsError: false,
@@ -32,8 +29,8 @@ const PurchaseSmp = () => {
   // form data states
   const [purchasingFrom, setPurchasingFrom] = useState("");
   const [noOfBags, setNoOfBags] = useState("");
-  const [selectedDate, setSelectedDate] = useState();
-  const [time, setTime] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [time, setTime] = useState("");
   const [remark, setRemark] = useState("");
 
   // loading
@@ -84,20 +81,28 @@ const PurchaseSmp = () => {
   function submitData() {
     const formdata = new FormData(form.current);
     const data = Object.fromEntries(formdata.entries());
-    console.log(data);
     setLoading(true);
     axios
-      .post("", data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .post(
+        "https://purchase-dispatch-excel.vercel.app/api/v1/purchase/smp/push-data-to-sheet",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then(() => {
         setLoading(false);
         setOpenModal(false);
         toast.success("Data Saved Successfully");
         // reseting form
-        navigate(0);
+        setPurchasingFrom("");
+        setNoOfBags("");
+        setSelectedDate("");
+        setTime("");
+        setRemark("");
+
       })
       .catch((err) => {
         setOpenModal(false);
@@ -118,21 +123,18 @@ const PurchaseSmp = () => {
     if (fetchedName == null || fetchedName.length == 0) {
       setFetchLoading(true);
       axios
-        .get(
-          `https://purchase-dispatch-excel.vercel.app/api/v1/purchase/smp`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        )
+        .get(`https://purchase-dispatch-excel.vercel.app/api/v1/purchase/smp`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
         .then((res) => {
           const names = res.data.data.map((obj) => obj.name);
           setFetchedName(names);
           setFetchLoading(false);
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
           setFetchNameError(true);
           setFetchLoading(false);
         });

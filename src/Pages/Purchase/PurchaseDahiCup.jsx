@@ -7,12 +7,9 @@ import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Search from "../../components/Search";
-import { useNavigate } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 
 const PurchaseDahiCup = () => {
-  const navigate = useNavigate();
-
   const tempError = {
     purchasingFromError: false,
     quantityError: false,
@@ -31,8 +28,8 @@ const PurchaseDahiCup = () => {
   // form data states
   const [purchasingFrom, setPurchasingFrom] = useState("");
   const [quantity, setquantity] = useState("");
-  const [selectedDate, setSelectedDate] = useState();
-  const [time, setTime] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [time, setTime] = useState("");
 
   // loading
   const [loading, setLoading] = useState(false);
@@ -80,20 +77,26 @@ const PurchaseDahiCup = () => {
   function submitData() {
     const formdata = new FormData(form.current);
     const data = Object.fromEntries(formdata.entries());
-    console.log(data);
     setLoading(true);
     axios
-      .post("", data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .post(
+        "https://purchase-dispatch-excel.vercel.app/api/v1/purchase/dahi-cup/push-data-to-sheet",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then(() => {
         setLoading(false);
         setOpenModal(false);
         toast.success("Data Saved Successfully");
         // reseting form
-        navigate(0);
+        setPurchasingFrom("");
+        setSelectedDate("");
+        setTime("");
+        setquantity("");
       })
       .catch((err) => {
         setOpenModal(false);
@@ -110,7 +113,7 @@ const PurchaseDahiCup = () => {
       });
   }
 
-   useEffect(() => {
+  useEffect(() => {
     if (fetchedName == null || fetchedName.length == 0) {
       setFetchLoading(true);
       axios
@@ -128,7 +131,7 @@ const PurchaseDahiCup = () => {
           setFetchLoading(false);
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
           setFetchNameError(true);
           setFetchLoading(false);
         });
@@ -144,7 +147,7 @@ const PurchaseDahiCup = () => {
           style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
         >
           {fetchLoading ? (
-            <LoadingPage numberOfInputBox={4} remark={false}/>
+            <LoadingPage numberOfInputBox={4} remark={false} />
           ) : fetchNameError ? (
             <div className="flex grow items-center justify-center">
               <img

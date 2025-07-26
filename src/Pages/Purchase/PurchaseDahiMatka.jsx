@@ -7,12 +7,9 @@ import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Search from "../../components/Search";
-import { useNavigate } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 
 const PurchaseDahiMatka = () => {
-  const navigate = useNavigate();
-
   const tempError = {
     purchasingFromError: false,
     quantityError: false,
@@ -31,8 +28,8 @@ const PurchaseDahiMatka = () => {
   // form data states
   const [purchasingFrom, setPurchasingFrom] = useState("");
   const [quantity, setquantity] = useState("");
-  const [selectedDate, setSelectedDate] = useState();
-  const [time, setTime] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [time, setTime] = useState("");
 
   // loading
   const [loading, setLoading] = useState(false);
@@ -56,7 +53,6 @@ const PurchaseDahiMatka = () => {
   function collectFormData() {
     const formData = new FormData(form.current);
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
     if (data.PurchasingFrom == undefined || data.PurchasingFrom == "") {
       tempError.purchasingFromError = true;
     }
@@ -80,20 +76,26 @@ const PurchaseDahiMatka = () => {
   function submitData() {
     const formdata = new FormData(form.current);
     const data = Object.fromEntries(formdata.entries());
-    console.log(data);
     setLoading(true);
     axios
-      .post("", data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .post(
+        "https://purchase-dispatch-excel.vercel.app/api/v1/purchase/dahi-matka/push-data-to-sheet",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then(() => {
         setLoading(false);
         setOpenModal(false);
         toast.success("Data Saved Successfully");
         // reseting form
-        navigate(0);
+        setPurchasingFrom("");
+        setTime("");
+        setSelectedDate("");
+        setquantity("");
       })
       .catch((err) => {
         setOpenModal(false);
@@ -110,7 +112,7 @@ const PurchaseDahiMatka = () => {
       });
   }
 
-   useEffect(() => {
+  useEffect(() => {
     if (fetchedName == null || fetchedName.length == 0) {
       setFetchLoading(true);
       axios
@@ -128,7 +130,7 @@ const PurchaseDahiMatka = () => {
           setFetchLoading(false);
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
           setFetchNameError(true);
           setFetchLoading(false);
         });
@@ -144,7 +146,7 @@ const PurchaseDahiMatka = () => {
           style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
         >
           {fetchLoading ? (
-            <LoadingPage numberOfInputBox={4} remark={false}/>
+            <LoadingPage numberOfInputBox={4} remark={false} />
           ) : fetchNameError ? (
             <div className="flex grow items-center justify-center">
               <img
