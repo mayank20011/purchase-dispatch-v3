@@ -16,6 +16,7 @@ import PurchaseWoodenBlock from "./Pages/Purchase/PurchaseWoodenBlock";
 import PurchaseGensetDiesel from "./Pages/Purchase/PurchaseGensetDiesel";
 import PurchaseDahiCup from "./Pages/Purchase/PurchaseDahiCup";
 import PurchaseDahiMatka from "./Pages/Purchase/PurchaseDahiMatka";
+import PageNotFound from "./Pages/PageNotFound";
 const App = () => {
   const [isLogedIn, setIsLogedIn] = useState(localStorage.getItem("isLogedIn"));
   localStorage.setItem("isLogedIn", isLogedIn);
@@ -67,6 +68,7 @@ const App = () => {
         <Route path="/Send-otp" element={<SendOtp />} />
         <Route path="/verify-otp/:email" element={<VerifyOTP />} />
         <Route path="/reset-password/:email" element={<ResetPassword />} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );
