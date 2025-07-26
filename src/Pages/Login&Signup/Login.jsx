@@ -86,7 +86,7 @@ const Login = ({ setIsLogedIn }) => {
               }}
             ></i>
           </div>
-          <Link to={"/reset-password"}>
+          <Link to={"/send-otp"}>
             Forgot your password?{" "}
             <span className="text-blue-600">Reset password</span>
           </Link>
