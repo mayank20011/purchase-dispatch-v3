@@ -62,7 +62,6 @@ const App = () => {
             element={<Dispatch setIsLogedIn={setIsLogedIn} />}
           />
         </Route>
-
         <Route path="/login" element={<Login setIsLogedIn={setIsLogedIn} />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/Send-otp" element={<SendOtp />} />

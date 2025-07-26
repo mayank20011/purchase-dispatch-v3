@@ -53,7 +53,6 @@ const PurchaseDahiCup = () => {
   function collectFormData() {
     const formData = new FormData(form.current);
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
     if (data.PurchasingFrom == undefined || data.PurchasingFrom == "") {
       tempError.purchasingFromError = true;
     }

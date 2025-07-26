@@ -31,7 +31,7 @@ const Purchase = () => {
       to: "/purchase/diesel-genset",
       heading: "Genset Diesel",
       pera: "Log a diesel purchase for genset fuel requirements",
-      imgSrc: "/genset-diesel.jpeg",
+      imgSrc: "/genset-diesel.jpg",
     },
     {
       to: "/purchase/dahi-cup",
@@ -43,7 +43,7 @@ const Purchase = () => {
       to: "/purchase/dahi-matka",
       heading: "Dahi Matka",
       pera: "Create a new purchase order for dahi matka containers",
-      imgSrc: "/dahi-matka.png",
+      imgSrc: "/dahi-matka.jpg",
     },
   ];
 
