@@ -116,10 +116,9 @@ const PurchasePolyFilm = () => {
   function submitData() {
     const formdata = new FormData(form.current);
     const data = Object.fromEntries(formdata.entries());
-    console.log(data);
     setLoading(true);
     axios
-      .post("", data, {
+      .post("https://purchase-dispatch-excel.vercel.app/api/v1/purchase/polyfilm/push-data-to-sheet", data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -129,7 +128,10 @@ const PurchasePolyFilm = () => {
         setOpenModal(false);
         toast.success("Data Saved Successfully");
         // reseting form
-        navigate(0);
+        setSelectedDate("");
+        setTime("");
+        setPurchasingFrom("");
+        form.current.reset();
       })
       .catch((err) => {
         setOpenModal(false);
