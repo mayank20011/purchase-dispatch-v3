@@ -109,7 +109,7 @@ const Dispatch = () => {
     console.log(data);
     setLoading(true);
     axios
-      .post("http://localhost:5000/api/v1/dispatch/push-data-to-sheet", data, {
+      .post("https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/push-data-to-sheet", data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -144,7 +144,7 @@ const Dispatch = () => {
     if (fetchedName == null || fetchedName.length == 0) {
       setFetchLoading(true);
       axios
-        .get(`http://localhost:5000/api/v1/dispatch/get-names`, {
+        .get(`https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/get-names`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
