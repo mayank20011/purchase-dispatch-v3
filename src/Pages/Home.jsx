@@ -14,6 +14,12 @@ const Home = () => {
       heading: "Dispatch Orders",
       pera: "Dispatch all pending orders efficiently to ensure timely delivery and maintain smooth flow across operations and logistics.",
     },
+    {
+      to: "/creates",
+      imgSrc: "/creates.png",
+      heading: "Creates Entry",
+      pera: "Record incoming crates by entering the supplier's name and the number of crates received.",
+    },
   ];
   return (
     <div className="mobile-screen sm:rounded-2xl flex flex-col bg-black text-white">
@@ -26,7 +32,7 @@ const Home = () => {
           <Link key={option.heading} to={option.to} className="flex flex-col gap-2">
             <img
               src={option.imgSrc}
-              alt="Purchase Img"
+              alt="Img"
               className="w-full aspect-[16/9] rounded-2xl"
             />
             <h1 className="text-lg font-semibold">{option.heading}</h1>

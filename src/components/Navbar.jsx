@@ -113,10 +113,17 @@ const Navbar = ({ name }) => {
 
           <Link
             to={"/dispatch"}
-            className="text-lg font-semibold flex gap-4 items-center"
+            className="text-lg font-semibold flex gap-4 items-center  border-b pb-6"
           >
             <i className="fa-solid fa-truck-fast"></i>
             <span>Dispatch</span>
+          </Link>
+          <Link
+            to={"/creates"}
+            className="text-lg font-semibold flex gap-4 items-center pb-6"
+          >
+            <i className="fa-solid fa-layer-group"></i>
+            <span>Creates</span>
           </Link>
         </nav>
       </div>

@@ -5,6 +5,14 @@ import App from "./App.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
+// Register service worker for PWA
+import { registerSW } from 'virtual:pwa-register'
+
+const updateSW = registerSW({
+  onNeedRefresh() {},
+  onOfflineReady() {},
+})
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <>

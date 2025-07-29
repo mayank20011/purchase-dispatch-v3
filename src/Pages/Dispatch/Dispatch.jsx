@@ -23,6 +23,7 @@ const Dispatch = () => {
   const [time, setTime] = useState("");
   const [filledProduct, setFilledProduct] = useState({});
   const [dispatchTo, setDispatchTo] = useState("");
+  const [noOfCreates, SetNoOfCreates] = useState("");
 
   // for loading
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,7 @@ const Dispatch = () => {
     dateError: false,
     timeError: false,
     dispatchToError: false,
+    createsError:false,
   };
   const [error, setError] = useState("");
 
@@ -64,7 +66,8 @@ const Dispatch = () => {
         key == "DriverName" ||
         key == "VechileNumber" ||
         key == "Company" ||
-        key == "DispatchTo"
+        key == "DispatchTo" ||
+        key == "Creates"
       ) {
         continue;
       } else {
@@ -75,9 +78,9 @@ const Dispatch = () => {
     }
 
     setFilledProduct(tempFilledProduct);
-    
-    if(data.DispatchTo ==""){
-       tempError.dispatchToError = true;
+
+    if (data.DispatchTo == "") {
+      tempError.dispatchToError = true;
     }
     if (data.Date == "") {
       tempError.dateError = true;
@@ -90,6 +93,9 @@ const Dispatch = () => {
     }
     if (data.VechileNumber == "") {
       tempError.vechileNoError = true;
+    }
+    if(data.Creates == ""){
+      tempError.createsError = true;
     }
     setError(tempError);
     if (Object.keys(tempFilledProduct).length == 0) {
@@ -109,11 +115,15 @@ const Dispatch = () => {
     console.log(data);
     setLoading(true);
     axios
-      .post("https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/push-data-to-sheet", data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .post(
+        "http://localhost:5000/api/v1/dispatch/push-data-to-sheet",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then(() => {
         setLoading(false);
         setOpenModal(false);
@@ -144,11 +154,14 @@ const Dispatch = () => {
     if (fetchedName == null || fetchedName.length == 0) {
       setFetchLoading(true);
       axios
-        .get(`https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/get-names`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
+        .get(
+          `https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/get-names`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         .then((res) => {
           const names = res.data.data.map((obj) => obj.name);
           setFetchedName(names);
@@ -181,6 +194,7 @@ const Dispatch = () => {
             className="custom-container flex flex-col gap-6 grow overflow-y-auto"
             ref={form}
             style={{ scrollbarColor: "black black", scrollbarWidth: "thin" }}
+            autoComplete="off"
           >
             {/* for company name */}
             <div className="flex flex-col gap-2">
@@ -322,6 +336,32 @@ const Dispatch = () => {
                 className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
               />
             </div>
+            {/* For No Of Creates */}
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="Creates"
+                className={`${
+                  error.createsError
+                    ? "text-red-600 font-semibold animate-bounce"
+                    : ""
+                }`}
+              >
+                Creates
+              </label>
+              <input
+                value={noOfCreates}
+                onChange={(e) => {
+                  SetNoOfCreates(e.target.value);
+                  setError((prev) => ({ ...prev, createsError: false }));
+                }}
+                placeholder="Enter No Of Creates ..."
+                type="number"
+                min={0}
+                required
+                name="Creates"
+                className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
+              />
+            </div>
             {/* for products */}
             {selectedCompany.length > 0 ? (
               <>
@@ -406,6 +446,11 @@ const Dispatch = () => {
             <div className="flex items-center gap-4 font-bold">
               <h1 className="text-blue-400">Dispatch To:</h1>
               <h1 className="font-semibold ">{dispatchTo}</h1>
+            </div>
+            {/* For No Of Creates */}
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">No Of Creates:</h1>
+              <h1 className="font-semibold ">{noOfCreates}</h1>
             </div>
             {/* For Products */}
             <div className="flex flex-col gap-4 font-bold">

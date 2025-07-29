@@ -17,6 +17,7 @@ import PurchaseGensetDiesel from "./Pages/Purchase/PurchaseGensetDiesel";
 import PurchaseDahiCup from "./Pages/Purchase/PurchaseDahiCup";
 import PurchaseDahiMatka from "./Pages/Purchase/PurchaseDahiMatka";
 import PageNotFound from "./Pages/PageNotFound";
+import Creates from "./Pages/Creates/Creates";
 const App = () => {
   const [isLogedIn, setIsLogedIn] = useState(localStorage.getItem("isLogedIn"));
   localStorage.setItem("isLogedIn", isLogedIn);
@@ -61,6 +62,10 @@ const App = () => {
           <Route
             path="/dispatch"
             element={<Dispatch setIsLogedIn={setIsLogedIn} />}
+          />
+          <Route
+            path="/creates"
+            element={<Creates setIsLogedIn={setIsLogedIn} />}
           />
         </Route>
         <Route path="/login" element={<Login setIsLogedIn={setIsLogedIn} />} />
