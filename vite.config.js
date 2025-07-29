@@ -11,8 +11,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "My React Vite App",
-        short_name: "MyApp",
+        name: "VF Purchase Dispatch",
+        short_name: "VF Operations",
         description: "Installable React Vite app as a PWA",
         theme_color: "#ffffff",
         background_color: "#ffffff",
