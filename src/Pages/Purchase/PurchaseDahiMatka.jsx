@@ -80,7 +80,7 @@ const PurchaseDahiMatka = () => {
     axios
       .post(
         "https://purchase-dispatch-excel.vercel.app/api/v1/purchase/dahi-matka/push-data-to-sheet",
-        data,
+        { ...data, _id: purchasingFrom._id },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -125,8 +125,7 @@ const PurchaseDahiMatka = () => {
           }
         )
         .then((res) => {
-          const names = res.data.data.map((obj) => obj.name);
-          setFetchedName(names);
+          setFetchedName(res.data.data);
           setFetchLoading(false);
         })
         .catch((err) => {
@@ -292,7 +291,11 @@ const PurchaseDahiMatka = () => {
           >
             <div className="flex items-center gap-4 font-bold">
               <h1 className="text-blue-400">Purchasing From:</h1>
-              <h1 className="font-semibold">{purchasingFrom}</h1>
+              <h1 className="font-semibold">{purchasingFrom.name}</h1>
+            </div>
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Unique Id:</h1>
+              <h1 className="font-semibold">{purchasingFrom._id}</h1>
             </div>
             <div className="flex items-center gap-4 font-bold">
               <h1 className="text-blue-400">Date:</h1>
