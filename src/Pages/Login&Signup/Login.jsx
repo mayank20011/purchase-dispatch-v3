@@ -70,6 +70,7 @@ const Login = ({ setIsLogedIn }) => {
             placeholder="Email"
             name="email"
             required
+            autoComplete="off"
           />
           <div className="w-full relative">
             <input

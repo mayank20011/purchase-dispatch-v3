@@ -231,6 +231,7 @@ const Creates = () => {
                 onWheel={(e) => {
                   e.target.blur();
                 }}
+                autoComplete="off"
                 placeholder="Enter Number Of Creates Received ..."
                 className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
               />

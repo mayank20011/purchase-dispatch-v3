@@ -74,6 +74,7 @@ const Signup = () => {
             placeholder="Enter Name"
             required
             name="name"
+            autoComplete="off"
           />
           <input
             type="email"
@@ -81,6 +82,7 @@ const Signup = () => {
             placeholder="Email"
             required
             name="email"
+            autoComplete="off"
           />
           <div className="w-full relative">
             <input
