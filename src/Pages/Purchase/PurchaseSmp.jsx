@@ -255,6 +255,8 @@ const PurchaseSmp = () => {
                   onWheel={(e) => {
                     e.target.blur();
                   }}
+                  autoComplete="off"
+                  min={0}
                   onChange={(e) => {
                     setNoOfBags(e.target.value);
                     setError((prev) => ({ ...prev, noOfBagsError: false }));

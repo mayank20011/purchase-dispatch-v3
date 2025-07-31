@@ -14,10 +14,10 @@ const updateSW = registerSW({
 })
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <>
       <ToastContainer />
       <App />
     </>
-  </StrictMode>
+  // </StrictMode>
 );

@@ -252,6 +252,8 @@ const PurchaseDahiMatka = () => {
                   onWheel={(e) => {
                     e.target.blur();
                   }}
+                  autoComplete="off"
+                  min={0}
                   onChange={(e) => {
                     setquantity(e.target.value);
                     setError((prev) => ({ ...prev, quantityError: false }));

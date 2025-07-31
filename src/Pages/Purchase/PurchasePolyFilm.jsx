@@ -289,6 +289,7 @@ const PurchasePolyFilm = () => {
                     }}
                     min={0}
                     type="number"
+                    autoComplete="off"
                     required
                     name={`${product.name} (${product.size})`}
                     className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"

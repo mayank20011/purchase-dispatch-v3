@@ -274,6 +274,7 @@ const PurchaseMilk = () => {
                   setWeightSlab(e.target.value);
                   setError((prev) => ({ ...prev, serialNoError: false }));
                 }}
+                autoComplete="off"
                 placeholder="Enter Weight Slab Serial Number"
                 className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
               />
@@ -299,6 +300,7 @@ const PurchaseMilk = () => {
                   setVechileNo(e.target.value);
                   setError((prev) => ({ ...prev, vechileNoError: false }));
                 }}
+                autoComplete="off"
                 placeholder="Enter Vechile Number"
                 className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
               />
@@ -324,6 +326,7 @@ const PurchaseMilk = () => {
                   setDriverName(e.target.value);
                   setError((prev) => ({ ...prev, driverNameError: false }));
                 }}
+                autoComplete="off"
                 placeholder="Enter Driver Name"
                 className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
               />

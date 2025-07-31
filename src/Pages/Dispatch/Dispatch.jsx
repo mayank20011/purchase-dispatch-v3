@@ -43,6 +43,9 @@ const Dispatch = () => {
   // for form ref
   const form = useRef();
 
+  const [lastFetchedCompany, setLastFetchedCompany] = useState("");
+  const [vardaanCache, setVardaanCache] = useState([]);
+
   // for checking if there is any error
   function checkIfAnyError(tempError) {
     for (let key in tempError) {
@@ -132,6 +135,7 @@ const Dispatch = () => {
         setSelectedCompany("");
         setDriverName("");
         setVechileNo("");
+        SetNoOfCreates("");
       })
       .catch((err) => {
         setOpenModal(false);
@@ -149,17 +153,23 @@ const Dispatch = () => {
   }
 
   useEffect(() => {
-    if (selectedCompany == "Vardaan") {
-      if (fetchedName == null || fetchedName.length <= 1) {
+    if (selectedCompany === "Vardaan") {
+      if (vardaanCache.length === 0) {
+        // Fetch from server if not cached
+        console.log("Fetching Vardaan names...");
         setFetchLoading(true);
         axios
-          .get(`https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/get-names/vardaan`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          })
+          .get(
+            `https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/get-names/vardaan`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
           .then((res) => {
-            setFetchedName(res.data.data);
+            setVardaanCache(res.data.data); // ⬅️ cache it
+            setFetchedName(res.data.data); // ⬅️ also show it
             setFetchLoading(false);
           })
           .catch((err) => {
@@ -168,14 +178,13 @@ const Dispatch = () => {
             setFetchLoading(false);
           });
       } else {
-        selectedCompany == "Happy Nature"
-          ? setFetchedName([{ _id: "HN01", name: "Happy Nature" }])
-          : setFetchedName([{ _id: "GP01", name: "Gopala" }]);
+        // Use cached data
+        setFetchedName(vardaanCache);
       }
-    } else {
-      selectedCompany == "Happy Nature"
-        ? setFetchedName([{ _id: "HN01", name: "Happy Nature" }])
-        : setFetchedName([{ _id: "GP01", name: "Gopala" }]);
+    } else if (selectedCompany === "Happy Nature") {
+      setFetchedName([{ _id: "HN01", name: "Happy Nature" }]);
+    } else if (selectedCompany === "Gopala") {
+      setFetchedName([{ _id: "GP01", name: "Gopala" }]);
     }
   }, [selectedCompany]);
 
@@ -279,6 +288,7 @@ const Dispatch = () => {
                   setError((prev) => ({ ...prev, vechileNoError: false }));
                 }}
                 placeholder="Enter Vechile Number"
+                autoComplete="off"
                 className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
               />
             </div>
@@ -299,6 +309,7 @@ const Dispatch = () => {
                 type="text"
                 name="DriverName"
                 required
+                autoComplete="off"
                 onChange={(e) => {
                   setDriverName(e.target.value);
                   setError((prev) => ({ ...prev, driverNameError: false }));
@@ -379,6 +390,10 @@ const Dispatch = () => {
                 required
                 name="Creates"
                 className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
+                autoComplete="off"
+                onWheel={(e) => {
+                  e.target.blur();
+                }}
               />
             </div>
             {/* for products */}
@@ -390,10 +405,15 @@ const Dispatch = () => {
                     <div className="flex flex-col gap-2" key={product}>
                       <label htmlFor={product}>{product}</label>
                       <input
-                        type="text"
+                        type="number"
                         name={product}
                         placeholder="Enter Quantity ..."
                         className="w-full p-3 rounded-md bg-[#121212] text-white outline-none cursor-pointer"
+                        autoComplete="off"
+                        onWheel={(e) => {
+                          e.target.blur();
+                        }}
+                        min={0}
                       />
                     </div>
                   ))}
