@@ -74,7 +74,12 @@ const Creates = () => {
     axios
       .post(
         "https://purchase-dispatch-excel.vercel.app/api/v1/creates/push-data-to-sheet",
-        { name: selectedName, Date: data.Date, createsInward: noOfCreates },
+        {
+          name: selectedName.name,
+          Date: data.Date,
+          createsInward: noOfCreates,
+          _id: selectedName._id,
+        },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -110,7 +115,7 @@ const Creates = () => {
       setFetchLoading(true);
       axios
         .get(
-          `https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/get-names`,
+          `https://purchase-dispatch-excel.vercel.app/api/v1/dispatch/get-names/vardaan`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -118,8 +123,11 @@ const Creates = () => {
           }
         )
         .then((res) => {
-          const names = res.data.data.map((obj) => obj.name);
-          setFetchedName(names);
+          setFetchedName([
+            { _id: "HN01", name: "Happy Nature" },
+            { _id: "GP01", name: "Gopala" },
+            ...res.data.data,
+          ]);
           setFetchLoading(false);
         })
         .catch((err) => {
@@ -258,7 +266,11 @@ const Creates = () => {
           >
             <div className="flex items-center gap-4 font-bold">
               <h1 className="text-blue-400">Name:</h1>
-              <h1 className="font-semibold">{selectedName}</h1>
+              <h1 className="font-semibold">{selectedName.name}</h1>
+            </div>
+            <div className="flex items-center gap-4 font-bold">
+              <h1 className="text-blue-400">Unique Id:</h1>
+              <h1 className="font-semibold">{selectedName._id}</h1>
             </div>
             <div className="flex items-center gap-4 font-bold">
               <h1 className="text-blue-400">Date:</h1>
